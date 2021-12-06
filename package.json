@@ -6,7 +6,7 @@
     "typescript": "^4.5.2"
   },
   "scripts": {
-    "start": "nodemon day5-1.ts"
+    "s": "nodemon src/day${0}-${1}.ts"
   },
   "packageManager": "yarn@3.1.1"
 }
