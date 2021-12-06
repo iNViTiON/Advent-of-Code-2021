@@ -524,7 +524,7 @@ namespace day5_2 {
     .flat()
     .reduce<{ [x: number]: { [y: number]: number } }>(
       (acc, [x, y]) => (
-        (acc[x] ??= {}), ((acc[x] as X)[y] = ((acc[x] as X)[y] ?? 0) + 1), acc
+        ((acc[x] ??= {})[y] = ((acc[x] as X)[y] ?? 0) + 1), acc
       ),
       {}
     );
