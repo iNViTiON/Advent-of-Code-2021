@@ -8,7 +8,6 @@ namespace day5_3 {
     (acc, curr) => ((acc[curr] = (acc[curr] ?? 0) + 1), acc),
     {}
   );
-  count[6] ??= 0;
 
   for (let i = 0; i < 80; ++i) {
     for (let j = 0; j <= 8; ++j) {
