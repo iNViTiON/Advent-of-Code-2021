@@ -5,5 +5,8 @@
 Using Yarn [Zero-Installs](https://yarnpkg.com/features/zero-installs). Just NodeJS & Yarn on your. No need to run package install.
 
 ```sh
-yarn nodemon day{dayNum}-{part}.ts
+yarn s {dayNum} {part}
 ```
+
+e.g.  
+`yarn s 5 1`
