@@ -1,4 +1,4 @@
-namespace day8_1 {
+namespace day8_2 {
   const inp =
     `daegb gadbcf cgefda edcfagb dfg acefbd fdgab fg bdcfa fcgb | cdfgba fgbc dbfac gfadbc
 bdfc dcbegf bf egfbcda gebad cfgaed bfe edfgc aegfcb gebdf | fb fb bcdfaeg fcgdeb
