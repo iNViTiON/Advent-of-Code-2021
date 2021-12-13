@@ -885,44 +885,30 @@ fold along y=6`;
     }
   };
 
-  const process = (input: string): number => {
+  const process = (input: string): string => {
     const [dotsRaw, foldsRaw] = input.split("\n\n");
     const dots = dotsRaw!
       .split("\n")
       .map((dot) => dot.split(",").map(Number) as [number, number]);
-    const paper = dots.reduce<boolean[][]>(
+    let paper = dots.reduce<boolean[][]>(
       (acc, [x, y]) => (((acc[y] ??= [])[x] = true), acc),
       []
     );
-    const folds = foldsRaw!
-      .split("\n")
-      .map((line) => line.split(" ")[2]!)
-      .map((row) => row.split("="))
-      .map(
-        ([type, position]) =>
-          [type as "x" | "y", +position!] as ["x" | "y", number]
-      );
-    const f1 = fold(paper, folds[0]![0], folds[0]![1]);
-    const f2 = fold(f1, folds[1]![0], folds[1]![1]);
-    f2;
-    return f1.reduce<number>(
-      (acc, row) => acc + row.reduce((acc2, y) => acc2 + (y ? 1 : 0), 0),
-      0
+    const folds = Array.from(foldsRaw?.matchAll(/(x|y)=(\d+)/g)!).map(
+      ([_, axis, position]) => [axis, +position!] as ["x" | "y", number]
+    );
+    for (let i = 0; i < folds.length; ++i) {
+      const [axis, position] = folds[i]!;
+      paper = fold(paper, axis, position);
+      console.log(`×${i + 1}: ${paper.flat().filter((b) => b).length}`);
+    }
+    return paper.reduce(
+      (acc, row) =>
+        (acc += "\n\t" + (row?.map((y) => (y ? "#" : " ")).join("") ?? "")),
+      ""
     );
   };
-  // const process2 = (input: string) => process(input, true);
 
-  console.log("part 1");
   console.log(`example: ${process(ex)}`);
-  inp;
   console.log(`result: ${process(inp)}`);
-  // console.log("\npart 2");
-  // console.log(`example: ${process2(ex)}`);
-  // console.log(`result: ${process2(inp)}`);
-}
-
-interface Cave {
-  name: string;
-  isSmall: boolean;
-  links: string[];
 }
