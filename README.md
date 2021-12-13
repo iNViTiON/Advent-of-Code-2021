@@ -1,4 +1,4 @@
-# [Advent-of-Code-2021](https://adventofcode.com/2021)
+# [Advent of Code 2021](https://adventofcode.com/2021)
 
 [![CodeQL](https://github.com/iNViTiON/Advent-of-Code-2021/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/iNViTiON/Advent-of-Code-2021/actions/workflows/codeql-analysis.yml)
 
