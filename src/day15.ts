@@ -118,8 +118,29 @@ namespace day15 {
       square[y + 1]?.[x],
     ].filter((plot): plot is Plot => plot !== undefined && !plot.visited);
 
-  const process = (input: string): number => {
-    const risks = input.split("\n").map((row) => row.split("").map(Number));
+  const expandCave = (riskMap: number[][]): number[][] => {
+    const risks: number[][] = JSON.parse(JSON.stringify(riskMap));
+    const width = risks.length;
+    risks.length = width * 5;
+    return Array.from(risks, (row) => row ?? undefined).map((row, y, ori) => {
+      row =
+        row ??
+        ori[y % width]!.map(
+          (risk) => risk && ((risk + Math.floor(y / width) - 1) % 9) + 1
+        );
+      row.length = width * 5;
+      return Array.from(row, (risk) => risk ?? undefined).map(
+        (risk, x, oriRow) =>
+          risk ?? ((oriRow[x % width]! + Math.floor(x / width) - 1) % 9) + 1
+      );
+    });
+  };
+
+  const process = (input: string, extendCave = false): number => {
+    let risks = input.split("\n").map((row) => row.split("").map(Number));
+    if (extendCave) {
+      risks = expandCave(risks);
+    }
     const square = risks.map((row, y) =>
       row.map((risk, x) => ({
         x,
@@ -131,12 +152,16 @@ namespace day15 {
     );
     square[0]![0]!.distance = 0;
     const unVisiteds = new Set<Plot>(square.flat());
+    const unVisitedsWithDistance = new Set<Plot>([square[0]![0]!]);
     while (unVisiteds.size > 0) {
-      const plot = Array.from(unVisiteds.values()).sort(
-        (a, b) => a.distance - b.distance
-      )[0];
+      let plot: Plot | undefined;
+      for (const unVisited of unVisitedsWithDistance) {
+        if (unVisited.distance < (plot?.distance ?? Number.MAX_SAFE_INTEGER))
+          plot = unVisited;
+      }
       if (plot === undefined) continue;
       plot.visited = true;
+      unVisitedsWithDistance.delete(plot);
       unVisiteds.delete(plot);
       const unVisitedNeighbor = getUnVisitedNeighbor(plot.x, plot.y, square);
       for (const neighbor of unVisitedNeighbor) {
@@ -144,6 +169,7 @@ namespace day15 {
           neighbor.distance,
           plot.distance + neighbor.risk
         );
+        unVisitedsWithDistance.add(neighbor);
       }
     }
     return square.flat().slice(-1)[0]!.distance;
@@ -152,9 +178,9 @@ namespace day15 {
   console.log("part 1");
   console.log(`  example: ${process(ex)}`);
   console.log(`  result : ${process(inp)}`);
-  // console.log("part 2 (×40)");
-  // console.log(`  example: ${process(ex, 40)}`);
-  // console.log(`  result : ${process(inp, 40)}`);
+  console.log("part 2 (cave dimension ×5)");
+  console.log(`  example: ${process(ex, true)}`);
+  console.log(`  result : ${process(inp, true)}`);
 }
 
 interface Plot {
