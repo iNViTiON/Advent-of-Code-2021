@@ -24,14 +24,14 @@ namespace day16 {
       .set(hex, Array.from(parseInt(hex, 16).toString(2).padStart(4, "0")))
       .get(hex)!;
 
-  const solveMap = new Map([
-    [0, (vals: number[]) => vals.reduce((acc, val) => acc + val, 0)],
-    [1, (vals: number[]) => vals.reduce((acc, val) => acc * val, 1)],
-    [2, (vals: number[]) => Math.min(...vals)],
-    [3, (vals: number[]) => Math.max(...vals)],
-    [5, (vals: number[]) => (vals[0]! > vals[1]! ? 1 : 0)],
-    [6, (vals: number[]) => (vals[0]! < vals[1]! ? 1 : 0)],
-    [7, (vals: number[]) => (vals[0]! === vals[1]! ? 1 : 0)],
+  const solveMap = new Map<number, (vals: number[]) => number>([
+    [0, (vals) => vals.reduce((acc, val) => acc + val, 0)],
+    [1, (vals) => vals.reduce((acc, val) => acc * val, 1)],
+    [2, (vals) => Math.min(...vals)],
+    [3, (vals) => Math.max(...vals)],
+    [5, (vals) => (vals[0]! > vals[1]! ? 1 : 0)],
+    [6, (vals) => (vals[0]! < vals[1]! ? 1 : 0)],
+    [7, (vals) => (vals[0]! === vals[1]! ? 1 : 0)],
   ]);
 
   const fromBinArray = (bin: string[]) => parseInt(bin.join(""), 2);
