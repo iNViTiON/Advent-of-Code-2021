@@ -1,13 +1,25 @@
 {
   "devDependencies": {
-    "@yarnpkg/pnpify": "^3.1.1-rc.7",
-    "nodemon": "^2.0.15",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.4"
+  },
+  "peerDependencies": {
+    "@types/node": "*"
+  },
+  "dependenciesMeta": {
+    "node-gyp": {
+      "unplugged": false
+    },
+    "nodemon": {
+      "unplugged": false
+    }
   },
   "scripts": {
     "r": "ts-node src/day${0}.ts",
     "s": "nodemon src/day${0}.ts"
   },
-  "packageManager": "yarn@3.1.1"
+  "packageManager": "yarn@3.1.1",
+  "dependencies": {
+    "nodemon": "^2.0.15"
+  }
 }
