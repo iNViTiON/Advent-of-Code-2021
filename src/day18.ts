@@ -203,7 +203,7 @@ namespace day18 {
     return mFirst + mLast;
   };
 
-  const process = (input: string): unknown => {
+  const process = (input: string): object => {
     let [result, ...addList] = input.split("\n") as string[];
     while (addList.length > 0) {
       result = add(result!, addList.shift()!);
@@ -216,9 +216,30 @@ namespace day18 {
     return { result, magnitude };
   };
 
+  const processPart2 = (input: string): object => {
+    const list = input.split("\n");
+    let maxMagnitude = 0;
+    for (const first of list) {
+      for (const second of list.filter((s) => s !== first)) {
+        let result = add(first, second);
+        while (
+          result !== (result = explode(result, 0, 0)) ||
+          result !== (result = split(result))
+        ) {}
+        maxMagnitude = Math.max(
+          maxMagnitude,
+          getMagnitude(JSON.parse(result!) as N)
+        );
+      }
+    }
+    return { maxMagnitude };
+  };
+
   console.table(
     Object.entries(inputs).reduce<Record<string, unknown>>(
-      (acc, [key, input]) => ((acc[key] = process(input)), acc),
+      (acc, [key, input]) => (
+        (acc[key] = { ...process(input), ...processPart2(input) }), acc
+      ),
       {}
     )
   );
