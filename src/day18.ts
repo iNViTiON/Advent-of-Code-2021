@@ -139,7 +139,21 @@ namespace day18 {
 [[[5,[8,2]],[8,4]],[[6,2],[8,[7,0]]]]`,
   };
 
-  const add = (a: string, b: string) => `[${a},${b}]`;
+  const add = (x: string, y: string) => `[${x},${y}]`;
+
+  const addToNearerst = (
+    regular: RegExpMatchArray | undefined,
+    part: string,
+    n: number
+  ) => {
+    if (regular === undefined) return part;
+    const num = regular[1]!;
+    const [part1, part2] = [
+      part.slice(0, regular.index),
+      part.slice(regular.index! + num.length),
+    ];
+    return `${part1}${+num + n}${part2}`;
+  };
 
   const explode = (input: string, i: number, bracketCount: number): string => {
     if (i >= input.length) return input;
@@ -148,25 +162,13 @@ namespace day18 {
     else if (input[i] === "]") --bracketCount;
     if (bracketCount === 5) {
       let [first, second] = [input.slice(0, i + 1), input.slice(i + 1)];
-      const [, a, b] = second.match(/(\d+),(\d+)/) ?? [];
-      if (a !== undefined && b !== undefined) {
+      const [, leftNum, rightNum] = second.match(/(\d+),(\d+)/) ?? [];
+      if (leftNum !== undefined && rightNum !== undefined) {
         second = second.replace(/(\d+),(\d+)/, "");
-        const lastRegular = Array.from(first.matchAll(/(\d+)/g)).pop();
-        if (lastRegular !== undefined) {
-          const [first1, first2] = [
-            first.slice(0, lastRegular.index),
-            first.slice(lastRegular.index! + lastRegular[1]!.length),
-          ];
-          first = `${first1}${+lastRegular[1]! + +a!}${first2}`;
-        }
-        const firstRegular = Array.from(second.matchAll(/(\d+)/g))[0];
-        if (firstRegular !== undefined) {
-          const [first1, first2] = [
-            second.slice(0, firstRegular.index),
-            second.slice(firstRegular.index! + firstRegular[1]!.length),
-          ];
-          second = `${first1}${+firstRegular[1]! + +b!}${first2}`;
-        }
+        const lastRegularFromFirst = Array.from(first.matchAll(/(\d+)/g)).pop();
+        first = addToNearerst(lastRegularFromFirst, first, +leftNum!);
+        const firstRegularFromSecond = Array.from(second.matchAll(/(\d+)/g))[0];
+        second = addToNearerst(firstRegularFromSecond, second, +rightNum!);
         result = `${first}${second}`;
       }
     } else {
