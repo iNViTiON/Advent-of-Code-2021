@@ -1084,34 +1084,33 @@ namespace day19 {
 
   const scrambleMap = new Map([
     [0, ([x, y, z]: Point) => [x, y, z] as Point],
-    [1, ([x, y, z]: Point) => [x, z, y] as Point],
-    [2, ([x, y, z]: Point) => [y, x, z] as Point],
-    [3, ([x, y, z]: Point) => [y, z, x] as Point],
-    [4, ([x, y, z]: Point) => [z, x, y] as Point],
-    [5, ([x, y, z]: Point) => [z, y, x] as Point],
+    [1, ([x, y, z]: Point) => [y, -x, z] as Point],
+    [2, ([x, y, z]: Point) => [-x, -y, z] as Point],
+    [3, ([x, y, z]: Point) => [-y, x, z] as Point],
+    [4, ([x, y, z]: Point) => [-z, y, x] as Point],
+    [5, ([x, y, z]: Point) => [y, z, x] as Point],
+    [6, ([x, y, z]: Point) => [z, -y, x] as Point],
+    [7, ([x, y, z]: Point) => [-y, -z, x] as Point],
+    [8, ([x, y, z]: Point) => [x, -z, y] as Point],
+    [9, ([x, y, z]: Point) => [-z, -x, y] as Point],
+    [10, ([x, y, z]: Point) => [-x, z, y] as Point],
+    [11, ([x, y, z]: Point) => [z, x, y] as Point],
+    [12, ([x, y, z]: Point) => [-x, y, -z] as Point],
+    [13, ([x, y, z]: Point) => [y, x, -z] as Point],
+    [14, ([x, y, z]: Point) => [x, -y, -z] as Point],
+    [15, ([x, y, z]: Point) => [-y, -x, -z] as Point],
+    [16, ([x, y, z]: Point) => [z, y, -x] as Point],
+    [17, ([x, y, z]: Point) => [y, -z, -x] as Point],
+    [18, ([x, y, z]: Point) => [-z, -y, -x] as Point],
+    [19, ([x, y, z]: Point) => [-y, z, -x] as Point],
+    [20, ([x, y, z]: Point) => [x, z, -y] as Point],
+    [21, ([x, y, z]: Point) => [z, -x, -y] as Point],
+    [22, ([x, y, z]: Point) => [-x, -z, -y] as Point],
+    [23, ([x, y, z]: Point) => [-z, x, -y] as Point],
   ]);
 
-  const scramble = (
-    input: Point[],
-    type: number,
-    mirror: [1 | -1, 1 | -1, 1 | -1]
-  ) => {
-    const [mx, my, mz] = mirror;
-    return input
-      .map(scrambleMap.get(type)!)
-      .map(([x, y, z]) => [x * mx, y * my, z * mz] as Point);
-  };
-
-  const mirrors: [1 | -1, 1 | -1, 1 | -1][] = [
-    [1, 1, 1],
-    [1, 1, -1],
-    [1, -1, 1],
-    [1, -1, -1],
-    [-1, 1, 1],
-    [-1, 1, -1],
-    [-1, -1, 1],
-    [-1, -1, -1],
-  ];
+  const scramble = (input: Point[], type: number) =>
+    input.map(scrambleMap.get(type)!);
 
   const beaconsIncludes = (beacons: Point[], beacon: Point) =>
     beacons.find((p) => p.map((v, i) => v === beacon[i]).every((v) => v)) !==
@@ -1130,16 +1129,32 @@ namespace day19 {
     );
     const baseBeacons = baseScanner![1];
     const diffs: Point[] = [];
-    for (let i = 0; i < scanners.length; ++i) {
-      const scanner = scanners[i]!;
-      console.log("scanner", scanner[0]);
-      const scannerBeacons = scanner[1];
-      for (const mirror of mirrors) {
+    const matches: Map<[string, Point[]], number> = new Map();
+    const scanneds: Map<[string, Point[]], Set<Point>> = new Map();
+    const scrambleds: Map<[string, Point[]], Map<number, Point[]>> = new Map();
+    while (scanners.length > 0)
+      for (let i = 0; i < scanners.length; ++i) {
+        const scanner = scanners[i]!;
+        console.log("scanner", scanner[0]);
+        const scannerBeacons = scanner[1];
+        const match =
+          matches.get(scanner) ?? matches.set(scanner, 0).get(scanner)!;
+        const scanned =
+          scanneds.get(scanner) ??
+          scanneds.set(scanner, new Set()).get(scanner)!;
         const oldLength = baseBeacons.length;
-        for (const mode of [0, 1, 2, 3, 4, 5]) {
-          const scrambleBeacon = scramble(scannerBeacons, mode, mirror);
+        const newBases = baseBeacons.filter((beacon) => !scanned.has(beacon));
+        console.log("base to check", newBases.length, match);
+        const scrambled =
+          scrambleds.get(scanner) ??
+          scrambleds.set(scanner, new Map()).get(scanner)!;
+        const modes = Array.from(scrambleMap.keys());
+        for (const mode of modes) {
+          const scrambleBeacon =
+            scrambled.get(mode) ??
+            scrambled.set(mode, scramble(scannerBeacons, mode)).get(mode)!;
           for (const beacon of scrambleBeacon) {
-            for (const baseBeacon of baseBeacons) {
+            for (const baseBeacon of newBases) {
               const diff = beacon.map((k, z) => baseBeacon[z]! - k) as Point;
               const alignBeacons = scrambleBeacon.map(
                 (oriBeacon) => oriBeacon.map((k, z) => k + diff[z]!) as Point
@@ -1147,6 +1162,21 @@ namespace day19 {
               const matchCount = alignBeacons.filter((compareBeacon) =>
                 beaconsIncludes(baseBeacons, compareBeacon)
               ).length;
+              // let matchCount = 0;
+              // for (
+              //   let j = 0;
+              //   j < alignBeacons.length &&
+              //   matchCount < 12 &&
+              //   alignBeacons.length - j + matchCount >= 12;
+              //   ++j
+              // ) {
+              //   const compareBeacon = alignBeacons[j]!;
+              //   if (beaconsIncludes(baseBeacons, compareBeacon)) {
+              //     ++matchCount;
+              //   }
+              // }
+              scanned.add(baseBeacon);
+              matches.set(scanner, match + matchCount);
               if (matchCount >= 12) {
                 const newBeacons = -(
                   baseBeacons.length -
@@ -1162,7 +1192,7 @@ namespace day19 {
                     `found new beacons +${newBeacons} now total: ${baseBeacons.length}`
                   );
                   scanners.splice(i, 1);
-                  i = -1;
+                  i -= 1;
                   diffs.push(diff);
                 }
                 break;
@@ -1172,9 +1202,7 @@ namespace day19 {
           }
           if (baseBeacons.length !== oldLength) break;
         }
-        if (baseBeacons.length !== oldLength) break;
       }
-    }
     let largestManhattanDistance = 0;
     for (const diff of diffs) {
       for (const diff2 of diffs) {
