@@ -156,8 +156,11 @@ namespace day20 {
     let imgOutput: number[][] = img;
     for (let i = 0; i < 2; ++i)
       imgOutput = enhance(imgOutput, enhancer, i % 2 === 1 ? enhancer[0]! : 0);
-    const litCount = imgOutput.flat().filter((pixel) => pixel === 1).length;
-    return { litCount };
+    const litCount2 = imgOutput.flat().filter((pixel) => pixel === 1).length;
+    for (let i = 2; i < 50; ++i)
+      imgOutput = enhance(imgOutput, enhancer, i % 2 === 1 ? enhancer[0]! : 0);
+    const litCount50 = imgOutput.flat().filter((pixel) => pixel === 1).length;
+    return { litCount2, litCount50 };
   };
 
   console.table(
