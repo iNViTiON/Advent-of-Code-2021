@@ -513,13 +513,10 @@ on x=-47037..-29197,y=63702..92015,z=-7785..16238`,
   const countCube = ({ x, y, z }: Cuboid): number =>
     (x[1] - x[0] + 1) * (y[1] - y[0] + 1) * (z[1] - z[0] + 1);
 
-  const isAInB = (a: Cuboid, b: Cuboid): boolean =>
+  const isIntersect = (a: Cuboid, b: Cuboid): boolean =>
     (["x", "y", "z"] as Axis[]).every(
       (axis) => a[axis][0] <= b[axis][1] && a[axis][1] >= b[axis][0]
     );
-
-  const isIntersect = (a: Cuboid, b: Cuboid): boolean =>
-    isAInB(a, b) || isAInB(b, a);
 
   const getIntersec = (a: Cuboid, b: Cuboid): Cuboid => ({
     x: [Math.max(a.x[0], b.x[0]), Math.min(a.x[1], b.x[1])],
